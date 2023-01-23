@@ -1,0 +1,4 @@
+
+USEMODULE_INCLUDES_piodisp_module := $(LAST_MAKEFILEDIR)/../../sub/librote \
+				  $(LAST_MAKEFILEDIR)
+USEMODULE_INCLUDES += $(USEMODULE_INCLUDES_piodisp_module)

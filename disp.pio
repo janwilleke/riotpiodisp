@@ -1,0 +1,33 @@
+.program disp
+.side_set 1 opt
+startx:
+    set x, 9  ;pixel in line # 640/4/4 = 40
+starty:
+    set y, 3
+start:
+    pull
+bitloop:
+    set pins, 0 ;#reset line
+    nop  side 1                ;# set clock
+    out pins, 8               [3] ;# put one byte to the output
+    nop  side 0 [2]            ;# reset clock
+    jmp !osre  bitloop ;# next 8bit (4 time as input is 32 bit)
+    jmp y--, start ;# if not line count goto start
+    jmp x--, starty
+    irq 4  ;# signal irq to frame machine
+    set pins, 1 ;# set line
+
+.program frame
+.side_set 0 opt
+startx:
+    set x, 23  ;240
+starty:
+    set y, 9
+start:
+    wait 1 irq, 4 ; wait for signel from display machine
+    nop       [8]
+    nop       [8]
+    set pins,0  [8] ; set frame
+    jmp y-- start
+    jmp x-- starty  ; if line count != 0 wait for the nex
+    set pins,1  [0] ; clean frame bit

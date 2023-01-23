@@ -1,0 +1,38 @@
+#include "periph_conf.h"
+
+//line 9562 in RP2040.h
+void start_dma(char *data, int size)
+{
+	static void *ptr;
+	ptr = data;
+
+	DMA->CH0_READ_ADDR = (int)data;
+	DMA->CH0_WRITE_ADDR = (int)&PIO0->TXF0;
+	DMA->CH0_TRANS_COUNT = size;
+	DMA->CH0_CTRL_TRIG.bit.IRQ_QUIET = 1;
+	DMA->CH0_CTRL_TRIG.bit.TREQ_SEL = 0x00;
+	DMA->CH0_CTRL_TRIG.bit.CHAIN_TO = 1;
+	DMA->CH0_CTRL_TRIG.bit.RING_SEL = 0;
+	DMA->CH0_CTRL_TRIG.bit.RING_SIZE = 0;
+	DMA->CH0_CTRL_TRIG.bit.INCR_WRITE = 0;
+	DMA->CH0_CTRL_TRIG.bit.INCR_READ = 1;
+	DMA->CH0_CTRL_TRIG.bit.DATA_SIZE = 2;
+	DMA->CH0_CTRL_TRIG.bit.HIGH_PRIORITY = 1;
+	DMA->CH0_CTRL_TRIG.bit.EN = 1;
+
+	DMA->CH1_READ_ADDR = (int)&ptr;
+	printf("ch1_r %p %lx\n", &DMA->CH1_READ_ADDR, DMA->CH1_READ_ADDR);
+	DMA->CH1_WRITE_ADDR = (int)&DMA->CH0_READ_ADDR;
+	printf("ch1_w %p %lx\n", &DMA->CH1_WRITE_ADDR, DMA->CH1_WRITE_ADDR);
+	DMA->CH1_TRANS_COUNT = 1;
+	DMA->CH1_CTRL_TRIG.bit.IRQ_QUIET = 1;
+	DMA->CH1_CTRL_TRIG.bit.TREQ_SEL = 0x3f;
+	DMA->CH1_CTRL_TRIG.bit.CHAIN_TO = 0;
+	DMA->CH1_CTRL_TRIG.bit.RING_SEL = 0;
+	DMA->CH1_CTRL_TRIG.bit.RING_SIZE = 0;
+	DMA->CH1_CTRL_TRIG.bit.INCR_WRITE = 0;
+	DMA->CH1_CTRL_TRIG.bit.INCR_READ = 0;
+	DMA->CH1_CTRL_TRIG.bit.DATA_SIZE = 2;
+	DMA->CH1_CTRL_TRIG.bit.HIGH_PRIORITY = 1;
+	DMA->CH1_CTRL_TRIG.bit.EN = 1;
+}
